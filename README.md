@@ -2,8 +2,10 @@
 A Beating Heart visualization written in C++ with [Raylib](https://www.raylib.com/)
 
 ## Demo
-![Demo]()
-[![Watch the video]()](https://raw.githubusercontent.com/pross1312/Heart/main/output.mp4)
+
+
+https://raw.githubusercontent.com/pross1312/Heart/main/output.mp4
+
 
 ## Quick Start
 
