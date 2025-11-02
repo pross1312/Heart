@@ -5,23 +5,25 @@
 #include <raylib.h>
 #include <cstdint>
 #include <raymath.h>
+#include <random>
 
 #include "ffmpeg.h"
 
-constexpr size_t POINT_COUNT = 90;
+constexpr bool ENABLE_PARTICLE_NOISE = true;
+constexpr size_t POINT_COUNT = 120;
 constexpr float RADIUS = 1.0f;
 constexpr float SCALE = 12.0f;
 constexpr size_t PARTICLE_COUNT = 120;
-constexpr float DEFAULT_RADIUS = 110.0f;
-constexpr float ANIMATE_TIME = 1.2f;
-constexpr float PARTICLE_DISTANCE_SCALE_WHEN_GROWING = 2.5f;
+constexpr float PARTICLE_RADIUS = 100.0f;
+constexpr float ANIMATE_TIME = 1.7f;
+constexpr float PARTICLE_DISTANCE_SCALE_WHEN_GROWING = 2.8f;
 constexpr float CENTER_DISTANCE_SCALE_WHEN_GROWING = 1.2f;
-constexpr float HEART_SCALE_SMALLEST = 1.0f;
+constexpr float HEART_SCALE_SMALLEST = 0.9f;
 constexpr float HEART_SCALE_BIGGEST = 1.5f;
 constexpr float RENDERING_TIME = 5.0f; //seconds
 constexpr const char* OUTPUT_PATH = "output.mp4";
 constexpr int FPS = 60;
-constexpr int RENDER_FPS = 30;
+constexpr int RENDER_FPS = FPS;
 constexpr int RENDER_WIDTH = 1200;
 constexpr int RENDER_HEIGHT = 900;
 constexpr uint32_t HEART_COLOR = 0xff0000ff; 
@@ -77,7 +79,11 @@ void update(float ease, float width, float height) {
         Vector2 center = half_screen_size + heart_points[i].position * pow(ease, CENTER_DISTANCE_SCALE_WHEN_GROWING);
         DrawCircleV(center, RADIUS, GetColor(HEART_COLOR));
         for (size_t j = 0; j < PARTICLE_COUNT; j++) {
-            Vector2 particle_position = center + heart_points[i].particles[j] * DEFAULT_RADIUS * pow(ease, PARTICLE_DISTANCE_SCALE_WHEN_GROWING);
+            auto particle_direction = heart_points[i].particles[j];
+            if (ENABLE_PARTICLE_NOISE) {
+                particle_direction = Vector2Rotate(particle_direction, GetTime());
+            }
+            Vector2 particle_position = center + particle_direction * PARTICLE_RADIUS * pow(ease, PARTICLE_DISTANCE_SCALE_WHEN_GROWING);
             DrawCircleV(particle_position, RADIUS, GetColor(HEART_COLOR));
         }
     }

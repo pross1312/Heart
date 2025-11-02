@@ -51,7 +51,7 @@ FFMPEG* ffmpeg_create(int fps, int width, int heigth, const char *output_path) {
             "-i", "-",
 
             "-c:v", "libx264",
-            "-vb", "10000k",
+            "-vb", "80000k",
             "-pix_fmt", "yuv420p",
             output_path,
 
