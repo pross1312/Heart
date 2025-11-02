@@ -52,7 +52,7 @@ FFMPEG* ffmpeg_create(int fps, int width, int heigth, const char *output_path) {
 
             "-c:v", "libx264",
             "-vb", "80000k",
-            "-pix_fmt", "yuv420p",
+            "-pix_fmt", "rgba",
             output_path,
 
             NULL

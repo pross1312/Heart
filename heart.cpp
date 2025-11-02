@@ -22,7 +22,7 @@ constexpr float HEART_SCALE_SMALLEST = 0.9f;
 constexpr float HEART_SCALE_BIGGEST = 1.5f;
 constexpr float RENDERING_TIME = 5.0f; //seconds
 constexpr const char* OUTPUT_PATH = "output.mp4";
-constexpr int FPS = 60;
+constexpr int FPS = 30;
 constexpr int RENDER_FPS = FPS;
 constexpr int RENDER_WIDTH = 1200;
 constexpr int RENDER_HEIGHT = 900;
@@ -121,6 +121,7 @@ int main() {
             ffmpeg = ffmpeg_create(RENDER_FPS, RENDER_WIDTH, RENDER_HEIGHT, OUTPUT_PATH);
             if (ffmpeg != nullptr) {
                 rendering_timer = RENDERING_TIME;
+                time = 0;
             }
         }
 
@@ -128,6 +129,7 @@ int main() {
             if (rendering_timer < 0) {
                 ffmpeg_stop(ffmpeg, false);
                 ffmpeg = nullptr;
+                time = 0;
             } else {
                 rendering_timer -= 1.0f/RENDER_FPS;
             }
@@ -140,8 +142,8 @@ int main() {
             BeginTextureMode(texture2D);
             update(ease, RENDER_WIDTH, RENDER_HEIGHT);
             EndTextureMode();
-            EndDrawing();
         } else {
+            DrawFPS(0, 20);
             DrawText("Press space to start render video", 0, 0, 20, WHITE);
             update(ease, GetScreenWidth(), GetScreenHeight());
         }
