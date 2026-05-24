@@ -12,12 +12,12 @@
 constexpr bool ENABLE_PARTICLE_NOISE = true;
 constexpr size_t POINT_COUNT = 120;
 constexpr float RADIUS = 1.0f;
-constexpr float SCALE = 12.0f;
+constexpr float SCALE = 10.0f;
 constexpr size_t PARTICLE_COUNT = 120;
-constexpr float PARTICLE_RADIUS = 100.0f;
-constexpr float ANIMATE_TIME = 1.7f;
-constexpr float PARTICLE_DISTANCE_SCALE_WHEN_GROWING = 2.8f;
-constexpr float CENTER_DISTANCE_SCALE_WHEN_GROWING = 1.2f;
+constexpr float PARTICLE_RADIUS = 90.0f;
+constexpr float ANIMATE_TIME = 1.5f;
+constexpr float PARTICLE_DISTANCE_SCALE_WHEN_GROWING = 3.0f;
+constexpr float CENTER_DISTANCE_SCALE_WHEN_GROWING = 1.0f;
 constexpr float HEART_SCALE_SMALLEST = 0.9f;
 constexpr float HEART_SCALE_BIGGEST = 1.5f;
 constexpr float RENDERING_TIME = 5.0f; //seconds
@@ -33,6 +33,8 @@ struct ControlPoint {
     Vector2 position;
     float scale;
     Vector2 particles[PARTICLE_COUNT];
+    float randomness[PARTICLE_COUNT];
+    Vector2 particles_velocity[PARTICLE_COUNT];
 };
 
 float heart_scale = 1.0f;
@@ -53,6 +55,7 @@ void generate_random_particle(ControlPoint *point) {
         };
         float radius = rand()*1.0f/RAND_MAX;
         point->particles[i] = particle_direction * radius;
+        point->randomness[i] = (2.0f * rand()*1.0f/RAND_MAX - 1.0f) * M_PI;
     }
 }
 
@@ -68,6 +71,15 @@ float ease_in_out(float t, float minVal, float maxVal) {
     }
 }
 
+Vector2 make_noise(Vector2 in_particle_direction, float in_randomness)
+{
+    return Vector2Rotate(in_particle_direction, GetTime() * in_randomness);
+    // return Vector2Add(in_particle_direction, Vector2Scale(Vector2{
+    //     .x = rand()*1.0f/RAND_MAX - 0.5f,
+    //     .y = rand()*1.0f/RAND_MAX - 0.5f,
+    // }, 1.0f));
+}
+
 void update(float ease, float width, float height) {
     ClearBackground(BLACK);
 
@@ -80,8 +92,9 @@ void update(float ease, float width, float height) {
         DrawCircleV(center, RADIUS, GetColor(HEART_COLOR));
         for (size_t j = 0; j < PARTICLE_COUNT; j++) {
             auto particle_direction = heart_points[i].particles[j];
+            auto randomness = heart_points[i].randomness[j];
             if (ENABLE_PARTICLE_NOISE) {
-                particle_direction = Vector2Rotate(particle_direction, GetTime());
+                particle_direction = make_noise(particle_direction, randomness);
             }
             Vector2 particle_position = center + particle_direction * PARTICLE_RADIUS * pow(ease, PARTICLE_DISTANCE_SCALE_WHEN_GROWING);
             DrawCircleV(particle_position, RADIUS, GetColor(HEART_COLOR));
